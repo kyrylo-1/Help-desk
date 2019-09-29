@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Help-desk.API", "Help-desk.API\Help-desk.API.csproj", "{3AEAE202-8549-4B10-9C32-876FE7072C3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelpDesk.API", "Help-desk.API\HelpDesk.API.csproj", "{3AEAE202-8549-4B10-9C32-876FE7072C3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

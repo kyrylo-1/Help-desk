@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Help_desk.API.Controllers
+namespace HelpDesk.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
