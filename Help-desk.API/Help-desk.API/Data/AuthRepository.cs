@@ -8,17 +8,17 @@ namespace HelpDesk.API.Data
     public class AuthRepository : IAuthRepository
     {
         private readonly DataContext context;
-        private readonly PasswordService passService;
+        private readonly PasswordUtil passUtil;
         public AuthRepository(DataContext context)
         {
             this.context = context;
-            passService = new PasswordService();
+            passUtil = new PasswordUtil();
         }
 
         public async Task<User> Register(User user, string password)
         {
             byte[] passwordHash, passwordSalt;
-            passService.CreatePasswordHash(password, out passwordHash, out passwordSalt);
+            passUtil.CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
@@ -36,7 +36,7 @@ namespace HelpDesk.API.Data
             if (user == null)
                 return null;
 
-            if (!passService.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+            if (!passUtil.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
             {
                 return null;
             }

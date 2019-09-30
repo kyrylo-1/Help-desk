@@ -3,7 +3,7 @@ using System.Text;
 
 namespace HelpDesk.API.Services
 {
-    public class PasswordService
+    public class PasswordUtil
     {
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
