@@ -21,9 +21,15 @@ namespace HelpDesk.API.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Text");
+                    b.Property<DateTime>("DateAdded");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("UserId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Tickets");
                 });
@@ -37,11 +43,21 @@ namespace HelpDesk.API.Migrations
 
                     b.Property<byte[]>("PasswordSalt");
 
+                    b.Property<string>("Type");
+
                     b.Property<string>("Username");
 
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("HelpDesk.API.Models.Ticket", b =>
+                {
+                    b.HasOne("HelpDesk.API.Models.User", "User")
+                        .WithMany("Tickets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
