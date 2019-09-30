@@ -33,11 +33,11 @@ namespace HelpDesk.API.Data
             return user.Tickets;
         }
 
-        public Task<Ticket> GetTicket(int id)
+        public async Task<Ticket> GetTicket(int id)
         {
-            //var ticket = await context.Tickets.Include(u => u.Tickets).FirstOrDefaultAsync(t => t.Id == id);
+            var ticket = await context.Tickets.FirstOrDefaultAsync(t => t.Id == id);
 
-            throw new NotImplementedException();
+            return ticket;
         }
 
         public async Task<User> GetUser(int id)

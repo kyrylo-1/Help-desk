@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace HelpDesk.API.Controllers
 {
@@ -24,14 +25,14 @@ namespace HelpDesk.API.Controllers
             this.mapper = mapper;
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetAllTickets (int id)
-        {
-            var tickets = await repo.GetAllTickets(id);
+        //[HttpGet("{id}")]
+        //public async Task<IActionResult> GetAllTickets (int id)
+        //{
+        //    var tickets = await repo.GetAllTickets(id);
 
 
-            return Ok(tickets);
-        }
+        //    return Ok(tickets);
+        //}
 
         [HttpGet("{id}", Name = "GetTicket")]
         public async Task<IActionResult> GetTicket(int id)
@@ -49,9 +50,7 @@ namespace HelpDesk.API.Controllers
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
-            var userFromRepo = await repo.GetUser(userId);
-            //userFromRepo.Tickets.Add(ticketForCreationDto);
-            //return Ok(ticket);
+            User userFromRepo = await repo.GetUser(userId);
 
             Ticket ticket = mapper.Map<Ticket>(ticketForCreationDto);
             if (userFromRepo.Tickets == null)
@@ -63,13 +62,30 @@ namespace HelpDesk.API.Controllers
             {
                 var ticketoReturn = mapper.Map<TicketForReturnDto>(ticket);
                 return CreatedAtRoute("GetTicket", new { id = ticket.Id }, ticketoReturn);
-                //return Ok(new
-                //{
-                //    ticket
-                //});
             }
 
             return BadRequest("Could not add the ticket");
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePhoto(int userId, int id)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+
+            var user = await repo.GetUser(userId);
+
+            if (!user.Tickets.Any(p => p.Id == id))
+                return Unauthorized();
+
+            var ticketFromRepo = await repo.GetTicket(id);
+
+            repo.Delete(ticketFromRepo);
+
+            if (await repo.SaveAll())
+                return Ok();
+
+            return BadRequest("Failed to delete the photo");
         }
     }
 }
