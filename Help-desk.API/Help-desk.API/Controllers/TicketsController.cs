@@ -25,14 +25,6 @@ namespace HelpDesk.API.Controllers
             this.mapper = mapper;
         }
 
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> GetAllTickets (int id)
-        //{
-        //    var tickets = await repo.GetAllTickets(id);
-
-
-        //    return Ok(tickets);
-        //}
 
         [HttpGet("{id}", Name = "GetTicket")]
         public async Task<IActionResult> GetTicket(int id)
@@ -42,6 +34,14 @@ namespace HelpDesk.API.Controllers
             var ticket = mapper.Map<TicketForReturnDto>(ticketFromRepo);
 
             return Ok(ticket);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllTickets(int userId)
+        {
+            IEnumerable<Ticket> allTickets = await repo.GetAllTickets(userId);
+
+            return Ok(allTickets);
         }
 
         [HttpPost]
