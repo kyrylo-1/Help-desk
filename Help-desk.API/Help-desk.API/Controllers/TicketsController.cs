@@ -94,7 +94,7 @@ namespace HelpDesk.API.Controllers
 
         // ACCESS: TeamMember
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePhoto(int userId, int id)
+        public async Task<IActionResult> DeleteTicket(int userId, int id)
         {
             if (!IsUserAuthorized(userId))
                 return Unauthorized();
