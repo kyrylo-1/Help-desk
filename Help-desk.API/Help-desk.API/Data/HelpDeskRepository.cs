@@ -27,10 +27,26 @@ namespace HelpDesk.API.Data
             context.Remove(entity);
         }
 
-        public async Task<IEnumerable<Ticket>> GetAllTickets(int userId)
+        /// <summary>
+        /// Get all tickets from all users
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<Ticket>> GetAllTickets()
         {
-            User user = await context.Users.Include(u => u.Tickets).FirstOrDefaultAsync(u => u.Id == userId);
-            return user.Tickets;
+            //User user = await context.Users.Include(u => u.Tickets).FirstOrDefaultAsync(u => u.Id == userId);
+            //List<User> users = await context.Users.Include(u => u.Tickets).ToListAsync();
+
+            //var allTickets = new List<Ticket>();
+
+            //foreach (User user in users)
+            //{
+            //    foreach (Ticket t in user.Tickets)
+            //        allTickets.Add(t);                
+            //}
+
+            var allTickets = await context.Tickets.ToListAsync();
+
+            return context.Tickets;
         }
 
         public async Task<Ticket> GetTicket(int id)

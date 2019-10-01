@@ -8,9 +8,11 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Linq;
+using System;
 
 namespace HelpDesk.API.Controllers
 {
+    //[Route("api/users/{userId}/[controller]")]
     [Authorize]
     [Route("api/users/{userId}/[controller]")]
     [ApiController]
@@ -39,18 +41,30 @@ namespace HelpDesk.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllTickets(int userId)
         {
-            IEnumerable<Ticket> allTickets = await repo.GetAllTickets(userId);
+            if(!IsUserAuthorized(userId))
+                return Unauthorized();
 
-            return Ok(allTickets);
+            User userFromRepo = await repo.GetUser(userId);
+            if (!IsTeamMemeber(userFromRepo.Type))
+                return Unauthorized();
+
+            IEnumerable<Ticket> allTickets = await repo.GetAllTickets();
+            var ticketToReturn = mapper.Map<IEnumerable<TicketForListDto>>(allTickets);
+
+            return Ok(ticketToReturn);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddTicket(int userId, [FromBody]TicketForCreationDto ticketForCreationDto)
-        {
+        {            
             if (!IsUserAuthorized(userId))
                 return Unauthorized();
 
             User userFromRepo = await repo.GetUser(userId);
+
+            // Only HelpDesk user can add tasks
+            if (IsTeamMemeber(userFromRepo.Type))
+                return Unauthorized();
 
             Ticket ticket = mapper.Map<Ticket>(ticketForCreationDto);
             if (userFromRepo.Tickets == null)
@@ -67,18 +81,24 @@ namespace HelpDesk.API.Controllers
             return BadRequest("Could not add the ticket");
         }
 
+        /// <summary>
+        /// Allows TeamMembers to delete ticket
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePhoto(int userId, int id)
         {
             if (!IsUserAuthorized(userId))
                 return Unauthorized();
 
-            var user = await repo.GetUser(userId);
-
-            if (!user.Tickets.Any(p => p.Id == id))
+            User userFromRepo = await repo.GetUser(userId);
+            if (!IsTeamMemeber(userFromRepo.Type))
                 return Unauthorized();
 
-            var ticketFromRepo = await repo.GetTicket(id);
+            Ticket ticketFromRepo = await repo.GetTicket(id);
+            if(ticketFromRepo == null)
+            {
+                return BadRequest(string.Format("Ticket with id {0} doesn't exist", id));
+            }
 
             repo.Delete(ticketFromRepo);
 
@@ -88,9 +108,18 @@ namespace HelpDesk.API.Controllers
             return BadRequest("Failed to delete the photo");
         }
 
+        /// <summary>
+        /// Verifies that id from claim the same as id from route
+        /// </summary>
         private bool IsUserAuthorized(int userId)
         {
-             return   userId == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            Claim first = User.FindFirst(ClaimTypes.NameIdentifier);
+            return userId == int.Parse(first.Value);
+        }
+
+        private bool IsTeamMemeber(string userType)
+        {
+            return string.Equals(userType, UserType.TeamMember.ToString(), StringComparison.OrdinalIgnoreCase);
         }
     }
 }
