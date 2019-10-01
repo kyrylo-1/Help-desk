@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 
 namespace HelpDesk.API.Dtos
 {
-    public class TicketForListDto
+    public class TicketForUpdateDto
     {
-        public int Id { get; set; }
         public string Description { get; set; }
-        public DateTime DateAdded { get; set; }
     }
 }

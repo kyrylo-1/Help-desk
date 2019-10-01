@@ -33,14 +33,14 @@ namespace HelpDesk.API.Controllers
             if (!IsUserAuthorized(userId))
                 return Unauthorized();
 
-            User userFromRepo = await repo.GetUser(userId);     
+            User userFromRepo = await repo.GetUser(userId);
 
             Ticket ticketFromRepo = userFromRepo.Tickets.FirstOrDefault(t => t.Id == id);
-            if(ticketFromRepo == null)
-                return BadRequest("ticket doesn't exist");
+            if (ticketFromRepo == null)
+                return BadRequest(string.Format("Ticket with id {0} does not exist", id));
 
             if (!IsTeamMemeber(userFromRepo.Type) && ticketFromRepo.UserId != userId)
-                return Unauthorized();            
+                return Unauthorized();
 
             var ticket = mapper.Map<TicketForReturnDto>(ticketFromRepo);
 
@@ -59,7 +59,7 @@ namespace HelpDesk.API.Controllers
                 return Unauthorized();
 
             IEnumerable<Ticket> allTickets = await repo.GetAllTickets();
-            var ticketToReturn = mapper.Map<IEnumerable<TicketForListDto>>(allTickets);
+            var ticketToReturn = mapper.Map<IEnumerable<TicketForReturnDto>>(allTickets);
 
             return Ok(ticketToReturn);
         }
@@ -115,6 +115,38 @@ namespace HelpDesk.API.Controllers
                 return Ok();
 
             return BadRequest("Failed to delete the photo");
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchTicket(int userId, int id, [FromBody]TicketForUpdateDto ticketForUpdateDto)
+        {
+            if (!IsUserAuthorized(userId))
+                return Unauthorized();
+
+            User userFromRepo = await repo.GetUser(userId);
+            Ticket ticketFromRepo;
+            if (IsTeamMemeber(userFromRepo.Type))
+            {
+                ticketFromRepo = await repo.GetTicket(id);
+            }
+            else
+            {
+                ticketFromRepo = userFromRepo.Tickets.FirstOrDefault(t => t.Id == id);
+            }
+
+            if (ticketFromRepo == null)
+                return BadRequest(string.Format("Ticket with id {0} does not exist", id));
+
+            ticketFromRepo.Description = ticketForUpdateDto.Description;
+            repo.Update(ticketFromRepo);
+
+            if (await repo.SaveAll())
+            {
+                var ticket = mapper.Map<TicketForReturnDto>(ticketFromRepo);
+                return Ok(ticket);
+            }
+
+            return BadRequest("Failed to update the ticket");
         }
 
         /// <summary>

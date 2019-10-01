@@ -27,6 +27,11 @@ namespace HelpDesk.API.Data
             context.Remove(entity);
         }
 
+        public void Update<T>(T entity) where T : class
+        {
+            context.Update(entity);
+
+        }
         /// <summary>
         /// Get all tickets from all users
         /// </summary>

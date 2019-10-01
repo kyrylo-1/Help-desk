@@ -12,8 +12,6 @@ namespace HelpDesk.API.Helpers
     {
         public AutoMapperProfiles()
         {
-            CreateMap<Ticket, TicketForListDto>();
-
             CreateMap<Ticket, TicketForCreationDto>();
             CreateMap<TicketForCreationDto, Ticket>();
 
