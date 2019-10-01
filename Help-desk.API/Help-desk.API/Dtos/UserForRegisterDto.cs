@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HelpDesk.API.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -14,5 +15,8 @@ namespace HelpDesk.API.Dtos
         [Required]
         [StringLength(15, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 6)]
         public string Password { get; set; }
+
+        [Required]
+        public string Type { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace HelpDesk.API.Data
             passUtil.CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
             user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            user.PasswordSalt = passwordSalt;          
 
             await context.Users.AddAsync(user);
             await context.SaveChangesAsync();

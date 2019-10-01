@@ -1,6 +1,7 @@
 ﻿using HelpDesk.API.Data;
 using HelpDesk.API.Dtos;
 using HelpDesk.API.Models;
+using HelpDesk.API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +31,13 @@ namespace HelpDesk.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
+            bool isValidUserType  = EnumHelper.DoesStringExistInEnum(typeof(UserType), userForRegisterDto.Type);
+            if (!isValidUserType)
+            {
+                return BadRequest(string.Format("User type '{0}' is not valid",
+                         userForRegisterDto.Type));
+            }
+
             userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
 
             if (await repo.UserExists(userForRegisterDto.Username))
@@ -39,7 +47,8 @@ namespace HelpDesk.API.Controllers
 
             var userToCreate = new User
             {
-                Username = userForRegisterDto.Username
+                Username = userForRegisterDto.Username,
+                Type = userForRegisterDto.Type.ToString()
             };
 
             var createdUser = await repo.Register(userToCreate, userForRegisterDto.Password);
@@ -50,7 +59,7 @@ namespace HelpDesk.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
-            var userFromRepo = await repo.Login(userForLoginDto.Username, userForLoginDto.Password);
+            var userFromRepo = await repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
 
             if (userFromRepo == null)
                 return Unauthorized();
