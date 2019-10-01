@@ -27,21 +27,31 @@ namespace HelpDesk.API.Controllers
             this.mapper = mapper;
         }
 
-
         [HttpGet("{id}", Name = "GetTicket")]
-        public async Task<IActionResult> GetTicket(int id)
+        public async Task<IActionResult> GetTicket(int userId, int id)
         {
-            var ticketFromRepo = await repo.GetTicket(id);
+            if (!IsUserAuthorized(userId))
+                return Unauthorized();
+
+            User userFromRepo = await repo.GetUser(userId);     
+
+            Ticket ticketFromRepo = userFromRepo.Tickets.FirstOrDefault(t => t.Id == id);
+            if(ticketFromRepo == null)
+                return BadRequest("ticket doesn't exist");
+
+            if (!IsTeamMemeber(userFromRepo.Type) && ticketFromRepo.UserId != userId)
+                return Unauthorized();            
 
             var ticket = mapper.Map<TicketForReturnDto>(ticketFromRepo);
 
             return Ok(ticket);
         }
 
+        // ACCESS: TeamMember
         [HttpGet]
         public async Task<IActionResult> GetAllTickets(int userId)
         {
-            if(!IsUserAuthorized(userId))
+            if (!IsUserAuthorized(userId))
                 return Unauthorized();
 
             User userFromRepo = await repo.GetUser(userId);
@@ -54,9 +64,10 @@ namespace HelpDesk.API.Controllers
             return Ok(ticketToReturn);
         }
 
+        // ACCESS: HelpDesk
         [HttpPost]
         public async Task<IActionResult> AddTicket(int userId, [FromBody]TicketForCreationDto ticketForCreationDto)
-        {            
+        {
             if (!IsUserAuthorized(userId))
                 return Unauthorized();
 
@@ -75,15 +86,13 @@ namespace HelpDesk.API.Controllers
             if (await repo.SaveAll())
             {
                 var ticketoReturn = mapper.Map<TicketForReturnDto>(ticket);
-                return CreatedAtRoute("GetTicket", new { id = ticket.Id }, ticketoReturn);
+                return CreatedAtRoute("GetTicket", new { userId, id = ticket.Id }, ticketoReturn);
             }
 
             return BadRequest("Could not add the ticket");
         }
 
-        /// <summary>
-        /// Allows TeamMembers to delete ticket
-        /// </summary>
+        // ACCESS: TeamMember
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePhoto(int userId, int id)
         {
@@ -95,7 +104,7 @@ namespace HelpDesk.API.Controllers
                 return Unauthorized();
 
             Ticket ticketFromRepo = await repo.GetTicket(id);
-            if(ticketFromRepo == null)
+            if (ticketFromRepo == null)
             {
                 return BadRequest(string.Format("Ticket with id {0} doesn't exist", id));
             }
