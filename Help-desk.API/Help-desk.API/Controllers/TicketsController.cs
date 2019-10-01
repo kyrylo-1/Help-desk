@@ -55,10 +55,19 @@ namespace HelpDesk.API.Controllers
                 return Unauthorized();
 
             User userFromRepo = await repo.GetUser(userId);
-            if (!IsTeamMemeber(userFromRepo.Type))
-                return Unauthorized();
+            IEnumerable<Ticket> allTickets;
+            if (IsTeamMemeber(userFromRepo.Type))
+            {
+                allTickets = await repo.GetAllTickets();
+            }
+            else
+            {
+                allTickets = userFromRepo.Tickets;
+            }
 
-            IEnumerable<Ticket> allTickets = await repo.GetAllTickets();
+            if (allTickets == null)
+                return BadRequest(string.Format("Failed to get all tickets for user with id {0}", userId));
+
             var ticketToReturn = mapper.Map<IEnumerable<TicketForReturnDto>>(allTickets);
 
             return Ok(ticketToReturn);
