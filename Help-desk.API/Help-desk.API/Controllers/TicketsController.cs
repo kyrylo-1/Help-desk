@@ -47,7 +47,7 @@ namespace HelpDesk.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddTicket(int userId, [FromBody]TicketForCreationDto ticketForCreationDto)
         {
-            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (!IsUserAuthorized(userId))
                 return Unauthorized();
 
             User userFromRepo = await repo.GetUser(userId);
@@ -70,7 +70,7 @@ namespace HelpDesk.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePhoto(int userId, int id)
         {
-            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (!IsUserAuthorized(userId))
                 return Unauthorized();
 
             var user = await repo.GetUser(userId);
@@ -86,6 +86,11 @@ namespace HelpDesk.API.Controllers
                 return Ok();
 
             return BadRequest("Failed to delete the photo");
+        }
+
+        private bool IsUserAuthorized(int userId)
+        {
+             return   userId == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
         }
     }
 }
