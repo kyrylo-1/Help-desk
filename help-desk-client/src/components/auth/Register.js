@@ -1,25 +1,38 @@
 import React, { useState, useContext, useEffect } from 'react';
+import AuthContext from '../../context/auth/authContext';
 
 const Register = props => {
+  const authContext = useContext(AuthContext);
+
+  const { register, login, error, clearErrors, isAuthenticated } = authContext;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('Redirect to home page');
+      props.history.push('/');
+    }
+  }, [error, isAuthenticated, props.history]);
+
   const [user, setUser] = useState({
-    name: '',
+    username: '',
     password: '',
     type: 'HelpDeskUser'
   });
 
-  const { name, password, type } = user;
+  const { username, password, type } = user;
 
   const onChange = e => setUser({ ...user, [e.target.name]: e.target.value });
 
   const onSubmit = e => {
     e.preventDefault();
-    if (name === '' || password === '') {
+    if (username === '' || password === '') {
       console.error('Please enter all fields');
     } else {
-      //   register({
-      //     name,
-      //     password
-      //   });
+      register({
+        username,
+        password,
+        type
+      });
       console.log('Register');
     }
   };
@@ -31,11 +44,11 @@ const Register = props => {
       </h1>
       <form onSubmit={onSubmit}>
         <div className="form-group">
-          <label htmlFor="name">Name</label>
+          <label htmlFor="username">Name</label>
           <input
             type="text"
-            name="name"
-            value={name}
+            name="username"
+            value={username}
             onChange={onChange}
             required
           />
@@ -49,6 +62,7 @@ const Register = props => {
             onChange={onChange}
             required
             minLength="6"
+            maxLength="32"
           />
         </div>
         <input
