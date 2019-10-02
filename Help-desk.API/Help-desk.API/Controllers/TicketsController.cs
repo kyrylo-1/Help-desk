@@ -30,7 +30,7 @@ namespace HelpDesk.API.Controllers
         [HttpGet("{id}", Name = "GetTicket")]
         public async Task<IActionResult> GetTicket(int userId, int id)
         {
-            if (!IsUserAuthorized(userId))
+            if (!IsClaimsIdAndRouteIdSame(userId))
                 return Unauthorized();
 
             User userFromRepo = await repo.GetUser(userId);
@@ -51,7 +51,7 @@ namespace HelpDesk.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllTickets(int userId)
         {
-            if (!IsUserAuthorized(userId))
+            if (!IsClaimsIdAndRouteIdSame(userId))
                 return Unauthorized();
 
             User userFromRepo = await repo.GetUser(userId);
@@ -77,7 +77,7 @@ namespace HelpDesk.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddTicket(int userId, [FromBody]TicketForCreationDto ticketForCreationDto)
         {
-            if (!IsUserAuthorized(userId))
+            if (!IsClaimsIdAndRouteIdSame(userId))
                 return Unauthorized();
 
             User userFromRepo = await repo.GetUser(userId);
@@ -105,7 +105,7 @@ namespace HelpDesk.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTicket(int userId, int id)
         {
-            if (!IsUserAuthorized(userId))
+            if (!IsClaimsIdAndRouteIdSame(userId))
                 return Unauthorized();
 
             User userFromRepo = await repo.GetUser(userId);
@@ -129,7 +129,7 @@ namespace HelpDesk.API.Controllers
         [HttpPatch("{id}")]
         public async Task<IActionResult> PatchTicket(int userId, int id, [FromBody]TicketForUpdateDto ticketForUpdateDto)
         {
-            if (!IsUserAuthorized(userId))
+            if (!IsClaimsIdAndRouteIdSame(userId))
                 return Unauthorized();
 
             User userFromRepo = await repo.GetUser(userId);
@@ -161,7 +161,7 @@ namespace HelpDesk.API.Controllers
         /// <summary>
         /// Verifies that id from claim the same as id from route
         /// </summary>
-        private bool IsUserAuthorized(int userId)
+        private bool IsClaimsIdAndRouteIdSame(int userId)
         {
             Claim first = User.FindFirst(ClaimTypes.NameIdentifier);
             return userId == int.Parse(first.Value);
