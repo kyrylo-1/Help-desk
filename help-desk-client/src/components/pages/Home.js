@@ -28,7 +28,7 @@ const Home = () => {
           {user && (
             <div className="grid-2">
               <div>
-                <TicketForm />
+                <TicketForm canAdd={user.type === 'HelpDeskUser'} />
               </div>
               <div>
                 <Tickets canDeletTicket={user.type === 'TeamMember'} />

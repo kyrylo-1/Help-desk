@@ -1,7 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import TicketContext from '../../context/ticket/ticketContext';
+import PropTypes from 'prop-types';
 
-const TicketForm = () => {
+const TicketForm = ({ canAdd }) => {
   const ticketContext = useContext(TicketContext);
   const { addTicket, current, clearCurrent, updateTicket } = ticketContext;
 
@@ -41,9 +42,31 @@ const TicketForm = () => {
     clearCurrent();
   };
 
+  const showActionText = () => {
+    if (canAdd) {
+      return current ? 'Edit Ticket' : 'Add Ticket';
+    } else {
+      return 'Edit Ticket';
+    }
+  };
+
+  const showInputText = () => {
+    if (canAdd) {
+      return current ? 'Edit' : 'Add';
+    } else {
+      return 'Edit';
+    }
+  };
+
+  const editAddBtnClass = () => {
+    return !canAdd && !current
+      ? 'btn btn-primary btn-block btn-light'
+      : 'btn btn-primary btn-block';
+  };
+
   return (
     <form onSubmit={onSubmit}>
-      <h2 className="text-primary">{current ? 'Edit Ticket' : 'Add Ticket'}</h2>
+      <h2 className="text-primary">{showActionText()}</h2>
       <input
         type="text"
         placeholder="write description"
@@ -55,8 +78,8 @@ const TicketForm = () => {
       <div>
         <input
           type="submit"
-          value={current ? 'Edit' : 'Add'}
-          className="btn btn-primary btn-block"
+          value={showInputText()}
+          className={editAddBtnClass()}
         />
       </div>
       {current && (
@@ -68,6 +91,10 @@ const TicketForm = () => {
       )}
     </form>
   );
+};
+
+TicketForm.propTypes = {
+  canAdd: PropTypes.bool.isRequired
 };
 
 export default TicketForm;
