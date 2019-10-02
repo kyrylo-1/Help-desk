@@ -38,18 +38,7 @@ namespace HelpDesk.API.Data
         /// <returns></returns>
         public async Task<IEnumerable<Ticket>> GetAllTickets()
         {
-            //User user = await context.Users.Include(u => u.Tickets).FirstOrDefaultAsync(u => u.Id == userId);
-            //List<User> users = await context.Users.Include(u => u.Tickets).ToListAsync();
-
-            //var allTickets = new List<Ticket>();
-
-            //foreach (User user in users)
-            //{
-            //    foreach (Ticket t in user.Tickets)
-            //        allTickets.Add(t);                
-            //}
-
-            var allTickets = await context.Tickets.ToListAsync();
+           var allTickets = await context.Tickets.ToListAsync();
 
             return context.Tickets;
         }

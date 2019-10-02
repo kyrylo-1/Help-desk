@@ -61,6 +61,7 @@ const Register = props => {
             required
             minLength="6"
             maxLength="32"
+            autoComplete="true"
           />
         </div>
         <input

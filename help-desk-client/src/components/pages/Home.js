@@ -1,11 +1,34 @@
-import React from 'react';
-import TicketItem from '../tickets/TicketItem';
+import React, { Fragment, useContext, useEffect } from 'react';
+import Tickets from '../tickets/Tickets';
+import AuthContext from '../../context/auth/authContext';
+
 const Home = () => {
-  return (
+  const authContext = useContext(AuthContext);
+  console.log('Home');
+  const { user, loading } = authContext;
+  // debugger;
+  useEffect(() => {
+    authContext.loadUser();
+    // eslint-disable-next-line
+  }, []);
+
+  const loadingPart = (
     <div>
-      <h1>HOME</h1>
-      <TicketItem />
+      <h1>Loading...</h1>
     </div>
+  );
+
+  return (
+    <Fragment>
+      {loading ? (
+        loadingPart
+      ) : (
+        <div>
+          <h1>You loged as {user && user.usertype}</h1>
+          <Tickets />
+        </div>
+      )}
+    </Fragment>
   );
 };
 

@@ -5,10 +5,11 @@ import AuthContext from '../../context/auth/authContext';
 
 const Navbar = ({ title }) => {
   const authContext = useContext(AuthContext);
-  debugger;
+  // debugger;
   const { isAuthenticated, logout, user } = authContext;
 
   const onLogout = () => {
+    logout();
     console.log('logout();');
   };
 

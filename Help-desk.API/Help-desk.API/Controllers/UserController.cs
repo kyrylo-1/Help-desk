@@ -53,6 +53,7 @@ namespace HelpDesk.API.Controllers
             return Ok(new
             {
                 username = userFromRepo.Username,
+                usertype = userFromRepo.Type,
                 tickets = ticketsToReturn
             });
         }
