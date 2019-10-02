@@ -3,7 +3,7 @@ import TicketContext from '../../context/ticket/ticketContext';
 import TicketItem from './TicketItem';
 import Spinner from '../layout/Spinner';
 
-const Tickets = () => {
+const Tickets = ({ canDeletTicket }) => {
   const ticketContext = useContext(TicketContext);
   const { tickets, getAllTickets, loading } = ticketContext;
 
@@ -18,7 +18,7 @@ const Tickets = () => {
 
   const ticketItems = () => {
     return tickets.map(t => (
-      <TicketItem ticket={t} canDelete={false} key={t.id} />
+      <TicketItem ticket={t} canDelete={canDeletTicket} key={t.id} />
     ));
   };
 

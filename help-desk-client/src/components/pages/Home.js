@@ -24,7 +24,7 @@ const Home = () => {
       ) : (
         <div>
           <h1>You loged as {user && user.type}</h1>
-          <Tickets />
+          {user && <Tickets canDeletTicket={user.type === 'TeamMember'} />}
         </div>
       )}
     </Fragment>
