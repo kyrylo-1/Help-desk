@@ -53,6 +53,21 @@ const TicketState = props => {
     }
   };
 
+  const deleteTicket = async id => {
+    try {
+      await axios.delete(`/api/user/tickets/${id}`, {
+        baseURL: baseURL
+      });
+
+      dispatch({
+        type: DELETE_TICKET,
+        payload: id
+      });
+    } catch (err) {
+      dispatch({ type: TICKET_ERROR });
+    }
+  };
+
   const updateTicket = async ticket => {
     try {
       const res = await axios.patch(
@@ -92,7 +107,8 @@ const TicketState = props => {
         addTicket,
         setCurrent,
         clearCurrent,
-        updateTicket
+        updateTicket,
+        deleteTicket
       }}
     >
       {props.children}

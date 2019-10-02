@@ -4,11 +4,12 @@ import PropTypes from 'prop-types';
 
 const TicketItem = ({ ticket, canDelete }) => {
   const ticketContext = useContext(TicketContext);
-  const { setCurrent, clearCurrent } = ticketContext;
+  const { setCurrent, clearCurrent, deleteTicket } = ticketContext;
 
-  const { description, dateAdded } = ticket;
+  const { id, description, dateAdded } = ticket;
 
   const onDelete = () => {
+    deleteTicket(id);
     clearCurrent();
   };
 
