@@ -51,9 +51,15 @@ namespace HelpDesk.API.Controllers
                 Type = userForRegisterDto.Type.ToString()
             };
 
-            var createdUser = await repo.Register(userToCreate, userForRegisterDto.Password);
+            User createdUser = await repo.Register(userToCreate, userForRegisterDto.Password);
 
-            return StatusCode(201);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken createdToken = CreateToken(createdUser.Id.ToString(), createdUser.Username, tokenHandler);
+
+            return StatusCode(201, new
+            {
+                token = tokenHandler.WriteToken(createdToken)
+            });
         }
 
         [HttpPost("login")]
@@ -64,10 +70,21 @@ namespace HelpDesk.API.Controllers
             if (userFromRepo == null)
                 return Unauthorized();
 
+            var tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken createdToken = CreateToken(userFromRepo.Id.ToString(), userFromRepo.Username, tokenHandler);
+
+            return Ok(new
+            {
+                token = tokenHandler.WriteToken(createdToken)
+            });
+        }
+
+        private SecurityToken CreateToken(string userId, string userName, JwtSecurityTokenHandler tokenHandler)
+        {
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-                new Claim(ClaimTypes.Name, userFromRepo.Username)
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(ClaimTypes.Name, userName)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8
@@ -82,14 +99,7 @@ namespace HelpDesk.API.Controllers
                 SigningCredentials = creds
             };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            SecurityToken createdToken = tokenHandler.CreateToken(tokenDescriptor);
-
-            return Ok(new
-            {
-                token = tokenHandler.WriteToken(createdToken)
-            });
+            return tokenHandler.CreateToken(tokenDescriptor);
         }
     }
 }

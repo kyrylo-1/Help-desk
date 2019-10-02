@@ -12,26 +12,41 @@ using System;
 
 namespace HelpDesk.API.Controllers
 {
-    //[Route("api/users/{userId}/[controller]")]
     [Authorize]
-    [Route("api/users/{userId}/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class TicketsController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly IHelpDeskRepository repo;
         private readonly IMapper mapper;
 
-        public TicketsController(IHelpDeskRepository repo, IMapper mapper)
+        public UserController(IHelpDeskRepository repo, IMapper mapper)
         {
             this.repo = repo;
             this.mapper = mapper;
         }
 
-        [HttpGet("{id}", Name = "GetTicket")]
-        public async Task<IActionResult> GetTicket(int userId, int id)
+        [HttpGet]
+        public async Task<IActionResult> GetUser()
         {
-            if (!IsUserAuthorized(userId))
-                return Unauthorized();
+            string idFromClaim = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (!int.TryParse(idFromClaim, out int userId))
+                return BadRequest("Can not parse user id");
+
+            User userFromRepo = await repo.GetUser(userId);
+            if (userFromRepo == null)
+                return BadRequest(string.Format("Ticket with id {0} does not exist", userId));
+
+            var userToReturn = mapper.Map<UserForReturnDto>(userFromRepo);
+
+            return Ok(userToReturn);
+        }
+        [HttpGet("tickets/{id}", Name = "GetTicket")]
+        public async Task<IActionResult> GetTicket(int id)
+        {
+            string userIdFromClaim = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (!int.TryParse(userIdFromClaim, out int userId))
+                return BadRequest("Can not parse user id");
 
             User userFromRepo = await repo.GetUser(userId);
 
@@ -48,11 +63,12 @@ namespace HelpDesk.API.Controllers
         }
 
         // ACCESS: TeamMember
-        [HttpGet]
-        public async Task<IActionResult> GetAllTickets(int userId)
+        [HttpGet("tickets")]
+        public async Task<IActionResult> GetAllTickets()
         {
-            if (!IsUserAuthorized(userId))
-                return Unauthorized();
+            string userIdFromClaim = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (!int.TryParse(userIdFromClaim, out int userId))
+                return BadRequest("Can not parse user id");
 
             User userFromRepo = await repo.GetUser(userId);
             IEnumerable<Ticket> allTickets;
@@ -74,11 +90,12 @@ namespace HelpDesk.API.Controllers
         }
 
         // ACCESS: HelpDesk
-        [HttpPost]
-        public async Task<IActionResult> AddTicket(int userId, [FromBody]TicketForCreationDto ticketForCreationDto)
+        [HttpPost("tickets")]
+        public async Task<IActionResult> AddTicket([FromBody]TicketForCreationDto ticketForCreationDto)
         {
-            if (!IsUserAuthorized(userId))
-                return Unauthorized();
+            string userIdFromClaim = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (!int.TryParse(userIdFromClaim, out int userId))
+                return BadRequest("Can not parse user id");
 
             User userFromRepo = await repo.GetUser(userId);
 
@@ -101,36 +118,13 @@ namespace HelpDesk.API.Controllers
             return BadRequest("Could not add the ticket");
         }
 
-        // ACCESS: TeamMember
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTicket(int userId, int id)
+
+        [HttpPatch("tickets/{id}")]
+        public async Task<IActionResult> PatchTicket(int id, [FromBody]TicketForUpdateDto ticketForUpdateDto)
         {
-            if (!IsUserAuthorized(userId))
-                return Unauthorized();
-
-            User userFromRepo = await repo.GetUser(userId);
-            if (!IsTeamMemeber(userFromRepo.Type))
-                return Unauthorized();
-
-            Ticket ticketFromRepo = await repo.GetTicket(id);
-            if (ticketFromRepo == null)
-            {
-                return BadRequest(string.Format("Ticket with id {0} doesn't exist", id));
-            }
-
-            repo.Delete(ticketFromRepo);
-
-            if (await repo.SaveAll())
-                return Ok();
-
-            return BadRequest("Failed to delete the photo");
-        }
-
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> PatchTicket(int userId, int id, [FromBody]TicketForUpdateDto ticketForUpdateDto)
-        {
-            if (!IsUserAuthorized(userId))
-                return Unauthorized();
+            string userIdFromClaim = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (!int.TryParse(userIdFromClaim, out int userId))
+                return BadRequest("Can not parse user id");
 
             User userFromRepo = await repo.GetUser(userId);
             Ticket ticketFromRepo;
@@ -158,10 +152,36 @@ namespace HelpDesk.API.Controllers
             return BadRequest("Failed to update the ticket");
         }
 
+        // ACCESS: TeamMember
+        [HttpDelete("tickets/{id}")]
+        public async Task<IActionResult> DeleteTicket(int id)
+        {
+            string userIdFromClaim = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (!int.TryParse(userIdFromClaim, out int userId))
+                return BadRequest("Can not parse user id");
+
+            User userFromRepo = await repo.GetUser(userId);
+            if (!IsTeamMemeber(userFromRepo.Type))
+                return Unauthorized();
+
+            Ticket ticketFromRepo = await repo.GetTicket(id);
+            if (ticketFromRepo == null)
+            {
+                return BadRequest(string.Format("Ticket with id {0} doesn't exist", id));
+            }
+
+            repo.Delete(ticketFromRepo);
+
+            if (await repo.SaveAll())
+                return Ok();
+
+            return BadRequest("Failed to delete the photo");
+        }
+
         /// <summary>
         /// Verifies that id from claim the same as id from route
         /// </summary>
-        private bool IsUserAuthorized(int userId)
+        private bool IsClaimsIdAndRouteIdSame(int userId)
         {
             Claim first = User.FindFirst(ClaimTypes.NameIdentifier);
             return userId == int.Parse(first.Value);

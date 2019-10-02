@@ -13,7 +13,7 @@ namespace HelpDesk.API.Dtos
         public string Username { get; set; }
 
         [Required]
-        [StringLength(15, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 6)]
+        [StringLength(32, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 6)]
         public string Password { get; set; }
 
         [Required]

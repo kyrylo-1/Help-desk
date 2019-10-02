@@ -17,6 +17,8 @@ namespace HelpDesk.API.Helpers
 
             CreateMap<Ticket, TicketForReturnDto>();
             CreateMap<TicketForReturnDto, Ticket>();
+
+            CreateMap<User, UserForReturnDto>();
         }
     }
 }
