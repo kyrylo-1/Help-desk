@@ -3,11 +3,17 @@ import TicketContext from '../../context/ticket/ticketContext';
 
 const TicketForm = () => {
   const ticketContext = useContext(TicketContext);
-  const { addTicket, current } = ticketContext;
+  const { addTicket, current, clearCurrent, updateTicket } = ticketContext;
 
   useEffect(() => {
-    if (current == null) {
-      // setDescription('');
+    if (current != null) {
+      setDescription({
+        description: current.description
+      });
+    } else {
+      setDescription({
+        description: ''
+      });
     }
   }, [current]);
 
@@ -25,11 +31,14 @@ const TicketForm = () => {
     console.log('onSubmit');
     if (current === null) {
       addTicket(ticket);
+    } else {
+      updateTicket({ id: current.id, description: description });
     }
+    clearAll();
   };
 
   const clearAll = () => {
-    console.log('clear all');
+    clearCurrent();
   };
 
   return (

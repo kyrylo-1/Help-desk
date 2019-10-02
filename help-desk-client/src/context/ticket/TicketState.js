@@ -40,7 +40,7 @@ const TicketState = props => {
 
   const addTicket = async ticketData => {
     try {
-      const res = await axios.post('/api/user/tickets', ticketData, {
+      const res = await axios.post('/api/user/tickets/', ticketData, {
         baseURL: baseURL
       });
 
@@ -53,6 +53,35 @@ const TicketState = props => {
     }
   };
 
+  const updateTicket = async ticket => {
+    try {
+      const res = await axios.patch(
+        `/api/user/tickets/${ticket.id}`,
+        {
+          description: ticket.description
+        },
+        {
+          baseURL: baseURL
+        }
+      );
+
+      dispatch({
+        type: UPDATE_TICKET,
+        payload: res.data
+      });
+    } catch (err) {
+      dispatch({ type: TICKET_ERROR });
+    }
+  };
+
+  const setCurrent = ticket => {
+    dispatch({ type: SET_CURRENT_TICKET, payload: ticket });
+  };
+
+  const clearCurrent = () => {
+    dispatch({ type: CLEAR_CURRENT_TICKET });
+  };
+
   return (
     <TicketContext.Provider
       value={{
@@ -60,7 +89,10 @@ const TicketState = props => {
         current: state.current,
         error: state.error,
         getAllTickets,
-        addTicket
+        addTicket,
+        setCurrent,
+        clearCurrent,
+        updateTicket
       }}
     >
       {props.children}
