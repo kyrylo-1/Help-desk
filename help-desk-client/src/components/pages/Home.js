@@ -1,5 +1,6 @@
 import React, { Fragment, useContext, useEffect } from 'react';
 import Tickets from '../tickets/Tickets';
+import TicketForm from '../tickets/TicketForm';
 import AuthContext from '../../context/auth/authContext';
 
 const Home = () => {
@@ -24,7 +25,16 @@ const Home = () => {
       ) : (
         <div>
           <h1>You loged as {user && user.type}</h1>
-          {user && <Tickets canDeletTicket={user.type === 'TeamMember'} />}
+          {user && (
+            <div className="grid-2">
+              <div>
+                <TicketForm />
+              </div>
+              <div>
+                <Tickets canDeletTicket={user.type === 'TeamMember'} />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </Fragment>

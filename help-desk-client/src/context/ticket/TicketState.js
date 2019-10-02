@@ -21,15 +21,31 @@ const TicketState = props => {
   };
 
   const [state, dispatch] = useReducer(ticketReducer, initialState);
+  const baseURL = 'http://localhost:5000';
 
   const getAllTickets = async () => {
     try {
       const res = await axios.get('/api/user/tickets', {
-        baseURL: 'http://localhost:5000'
+        baseURL: baseURL
       });
 
       dispatch({
         type: GET_ALL_TICKETS,
+        payload: res.data
+      });
+    } catch (err) {
+      dispatch({ type: TICKET_ERROR });
+    }
+  };
+
+  const addTicket = async ticketData => {
+    try {
+      const res = await axios.post('/api/user/tickets', ticketData, {
+        baseURL: baseURL
+      });
+
+      dispatch({
+        type: ADD_TICKET,
         payload: res.data
       });
     } catch (err) {
@@ -43,7 +59,8 @@ const TicketState = props => {
         tickets: state.tickets,
         current: state.current,
         error: state.error,
-        getAllTickets
+        getAllTickets,
+        addTicket
       }}
     >
       {props.children}
