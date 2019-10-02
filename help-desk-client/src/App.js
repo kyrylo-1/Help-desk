@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
-import Register from './auth/Register';
+import Register from './components/auth/Register';
 
-const App = () => {
+function App() {
   return (
     <Router>
       <div className="container">
@@ -13,6 +13,6 @@ const App = () => {
       </div>
     </Router>
   );
-};
+}
 
 export default App;
