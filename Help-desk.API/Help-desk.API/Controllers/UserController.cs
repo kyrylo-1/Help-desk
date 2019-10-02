@@ -38,24 +38,9 @@ namespace HelpDesk.API.Controllers
                 return BadRequest(string.Format("Ticket with id {0} does not exist", userId));
 
 
-            IEnumerable<Ticket> allTickets;
-            if (IsTeamMemeber(userFromRepo.Type))
-                allTickets = await repo.GetAllTickets();
-            
-            else
-                allTickets = userFromRepo.Tickets;            
+            var userToReturn = mapper.Map<UserForReturnDto>(userFromRepo);
 
-            if (allTickets == null)
-                return BadRequest(string.Format("Failed to get all tickets for user with id {0}", userId));
-
-            var ticketsToReturn = mapper.Map<IEnumerable<TicketForReturnDto>>(allTickets);
-
-            return Ok(new
-            {
-                username = userFromRepo.Username,
-                usertype = userFromRepo.Type,
-                tickets = ticketsToReturn
-            });
+            return Ok(userToReturn);
         }
         [HttpGet("tickets/{id}", Name = "GetTicket")]
         public async Task<IActionResult> GetTicket(int id)
