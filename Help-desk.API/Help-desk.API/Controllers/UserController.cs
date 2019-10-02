@@ -26,15 +26,16 @@ namespace HelpDesk.API.Controllers
             this.mapper = mapper;
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser(int id)
+        [HttpGet]
+        public async Task<IActionResult> GetUser()
         {
-            if (int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value) != id)
-                return Unauthorized();
+            string idFromClaim = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (!int.TryParse(idFromClaim, out int userId))
+                return BadRequest("Can not parse id");
 
-            User userFromRepo = await repo.GetUser(id);
+            User userFromRepo = await repo.GetUser(userId);
             if (userFromRepo == null)
-                return BadRequest(string.Format("Ticket with id {0} does not exist", id));
+                return BadRequest(string.Format("Ticket with id {0} does not exist", userId));
 
 
             IEnumerable<Ticket> allTickets;
@@ -45,7 +46,7 @@ namespace HelpDesk.API.Controllers
                 allTickets = userFromRepo.Tickets;            
 
             if (allTickets == null)
-                return BadRequest(string.Format("Failed to get all tickets for user with id {0}", id));
+                return BadRequest(string.Format("Failed to get all tickets for user with id {0}", userId));
 
             var ticketsToReturn = mapper.Map<IEnumerable<TicketForReturnDto>>(allTickets);
 
