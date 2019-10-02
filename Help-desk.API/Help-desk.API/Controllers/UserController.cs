@@ -178,15 +178,6 @@ namespace HelpDesk.API.Controllers
             return BadRequest("Failed to delete the photo");
         }
 
-        /// <summary>
-        /// Verifies that id from claim the same as id from route
-        /// </summary>
-        private bool IsClaimsIdAndRouteIdSame(int userId)
-        {
-            Claim first = User.FindFirst(ClaimTypes.NameIdentifier);
-            return userId == int.Parse(first.Value);
-        }
-
         private bool IsTeamMemeber(string userType)
         {
             return string.Equals(userType, UserType.TeamMember.ToString(), StringComparison.OrdinalIgnoreCase);
