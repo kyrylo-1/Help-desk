@@ -37,7 +37,6 @@ namespace HelpDesk.API.Controllers
             if (userFromRepo == null)
                 return BadRequest(string.Format("Ticket with id {0} does not exist", userId));
 
-
             var userToReturn = mapper.Map<UserForReturnDto>(userFromRepo);
 
             return Ok(userToReturn);

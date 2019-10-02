@@ -4,7 +4,6 @@ import AuthContext from '../../context/auth/authContext';
 
 const Home = () => {
   const authContext = useContext(AuthContext);
-  console.log('Home');
   const { user, loading } = authContext;
   // debugger;
   useEffect(() => {
@@ -24,7 +23,7 @@ const Home = () => {
         loadingPart
       ) : (
         <div>
-          <h1>You loged as {user && user.usertype}</h1>
+          <h1>You loged as {user && user.type}</h1>
           <Tickets />
         </div>
       )}

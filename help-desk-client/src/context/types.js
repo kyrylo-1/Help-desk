@@ -11,3 +11,12 @@ export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAIL = 'LOGIN_FAIL';
 export const LOGOUT = 'LOGOUT';
 export const CLEAR_ERRORS = 'CLEAR_ERRORS';
+
+//TICKETS
+export const GET_ALL_TICKETS = 'GET_ALL_TICKETS';
+export const DELETE_TICKET = 'DELETE_TICKET';
+export const ADD_TICKET = 'ADD_TICKET';
+export const UPDATE_TICKET = 'UPDATE_TICKET';
+export const CLEAR_CURRENT_TICKET = 'CLEAR_CURRENT_TICKET';
+export const SET_CURRENT_TICKET = 'SET_CURRENT_TICKET';
+export const TICKET_ERROR = 'TICKET_ERROR';

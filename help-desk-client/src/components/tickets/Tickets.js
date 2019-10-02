@@ -1,30 +1,31 @@
 import React, { Fragment, useContext, useEffect } from 'react';
-import AuthContext from '../../context/auth/authContext';
+import TicketContext from '../../context/ticket/ticketContext';
 import TicketItem from './TicketItem';
+import Spinner from '../layout/Spinner';
 
 const Tickets = () => {
-  const authContext = useContext(AuthContext);
-  const { user, loading } = authContext;
+  const ticketContext = useContext(TicketContext);
+  const { tickets, getAllTickets, loading } = ticketContext;
 
-  if (user == null) return <Fragment />;
+  useEffect(() => {
+    getAllTickets();
+    // eslint-disable-next-line
+  }, []);
 
-  if (user.tickets !== null && user.tickets.length === 0 && !loading) {
+  if (tickets !== null && tickets.length === 0 && !loading) {
     return <h4>No tickets</h4>;
   }
 
-  const loadingPlaceHolder = <h3>Loading tickets...</h3>;
+  const ticketItems = () => {
+    return tickets.map(t => (
+      <TicketItem ticket={t} canDelete={false} key={t.id} />
+    ));
+  };
 
   return (
-    <div>
-      {user.tickets.map(t => (
-        <TicketItem
-          ticket={t}
-          canDelete={user.usertype === 'TeamMember'}
-          key={t.id}
-        />
-      ))}
-      ;
-    </div>
+    <Fragment>
+      {tickets != null && !loading ? ticketItems() : <Spinner />}
+    </Fragment>
   );
 };
 
