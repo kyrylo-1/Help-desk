@@ -15,9 +15,9 @@
 - Token is signed by secret key. Every time request hits **UserController** endpoint, Entity Framework verifies that this token is valid
 - During login, program fetch from db user's passwordHash and passwordSalt, computes them and verifies with provided password
 ### Security
-- It a role base application, So when user login, application gets his role for allowing or restricting certain functionality. Restriction happens in the web api and on the client as well.
+- It a role base application, so when user login, application gets his role for allowing or restricting certain functionality. Restriction happens in the web api and on the client as well.
 - Web api can send BadRequest or Unauthorized
-- Examples of restrictions on frontend: HelpDeskUser can't delete ticket and see tickets from all users. TeamMember can't add tickets
+- Examples of restrictions on frontend: HelpDeskUser can't delete ticket and can't see tickets from all users. TeamMember can't add tickets
 
 
 
