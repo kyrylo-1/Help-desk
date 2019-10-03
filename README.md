@@ -1,9 +1,9 @@
 # Help-desk
 
 ## How to setup locally?
-- go to _"help-desk-client_ folder" -> run **"npm i"** 
-- go to _"Help-desk.API/Help-desk.API_ folder" -> run **"dotnet run"** 
-- go to _"help-desk-client_ folder" folder -> run **"npm run start"** 
+- go to _"help-desk-client"_ folder -> run **"npm i"** 
+- go to _"Help-desk.API/Help-desk.API"_ folder -> run **"dotnet run"** 
+- go to _"help-desk-client"_ folder folder -> run **"npm run start"** 
 
 ## Design overview
 ![Schema](https://raw.githubusercontent.com/kyrylo-1/Help-desk/master/components.JPG)
