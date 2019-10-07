@@ -78,9 +78,10 @@ namespace HelpDesk.API
             else
             {
                 app.UseHsts();
+                app.UseHttpsRedirection();
             }
             app.UseDeveloperExceptionPage();
-            app.UseHttpsRedirection();
+          
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
             app.UseDefaultFiles();
