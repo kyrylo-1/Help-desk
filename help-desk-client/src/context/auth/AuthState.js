@@ -3,6 +3,7 @@ import axios from 'axios';
 import AuthContext from './authContext';
 import authReducer from './authReducer';
 import setAuthToken from '../../utils/setAuthToken';
+import { config } from '../../config/config';
 import {
   REGISTER_SUCCESS,
   REGISTER_FAIL,
@@ -23,7 +24,7 @@ const AuthState = props => {
     error: null
   };
   const configForRequest = {
-    baseURL: 'http://localhost:5000',
+    baseURL: config.url.API_URL,
     headers: {
       'Content-Type': 'application/json'
     }
@@ -39,7 +40,7 @@ const AuthState = props => {
     }
     try {
       const res = await axios.get('/api/user', {
-        baseURL: 'http://localhost:5000'
+        baseURL: config.url.API_URL
       });
 
       dispatch({

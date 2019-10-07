@@ -2,7 +2,7 @@ import React, { useReducer } from 'react';
 import axios from 'axios';
 import TicketContext from './ticketContext';
 import ticketReducer from './ticketReducer';
-import setAuthToken from '../../utils/setAuthToken';
+import { config } from '../../config/config';
 import {
   GET_ALL_TICKETS,
   DELETE_TICKET,
@@ -21,7 +21,7 @@ const TicketState = props => {
   };
 
   const [state, dispatch] = useReducer(ticketReducer, initialState);
-  const baseURL = 'http://localhost:5000';
+  const baseURL = config.url.API_URL;
 
   const getAllTickets = async () => {
     try {
