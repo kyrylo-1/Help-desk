@@ -4,6 +4,8 @@ Check the hosted version of web app [here](https://helpdesktesttask.azurewebsite
 - go to _"help-desk-client"_ folder -> run **"npm i"** 
 - go to _"Help-desk.API/Help-desk.API"_ folder -> run **"dotnet run"** 
 - go to _"help-desk-client"_ folder -> run **"npm run start"** 
+### To Run Unit tests:
+- go to _"Help-desk.API/HelpDesk.API.Tests"_ folder -> run **"dotnet test"** 
 
 ## Design overview
 ![Schema](https://raw.githubusercontent.com/kyrylo-1/Help-desk/master/components.JPG)
