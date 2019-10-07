@@ -51,15 +51,21 @@ namespace HelpDesk.API.Controllers
                 Type = userForRegisterDto.Type.ToString()
             };
 
-            User createdUser = await repo.Register(userToCreate, userForRegisterDto.Password);
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken createdToken = CreateToken(createdUser.Id.ToString(), createdUser.Username, tokenHandler);
-
-            return StatusCode(201, new
+            try
             {
-                token = tokenHandler.WriteToken(createdToken)
-            });
+                User createdUser = await repo.Register(userToCreate, userForRegisterDto.Password);
+                var tokenHandler = new JwtSecurityTokenHandler();
+                SecurityToken createdToken = CreateToken(createdUser.Id.ToString(), createdUser.Username, tokenHandler);
+
+                return StatusCode(201, new
+                {
+                    token = tokenHandler.WriteToken(createdToken)
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }      
         }
 
         [HttpPost("login")]

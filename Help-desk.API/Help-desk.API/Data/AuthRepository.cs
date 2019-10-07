@@ -8,21 +8,24 @@ namespace HelpDesk.API.Data
     public class AuthRepository : IAuthRepository
     {
         private readonly DataContext context;
-        private readonly PasswordUtil passUtil;
         public AuthRepository(DataContext context)
         {
             this.context = context;
-            passUtil = new PasswordUtil();
         }
 
         public async Task<User> Register(User user, string password)
         {
+            if (user == null || string.IsNullOrWhiteSpace(password))
+            {
+                throw new System.ArgumentException("Parameters are invalid");
+            }
+
             byte[] passwordHash, passwordSalt;
-            passUtil.CreatePasswordHash(password, out passwordHash, out passwordSalt);
+            PasswordUtil.CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
             user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;          
-
+            user.PasswordSalt = passwordSalt;
+   
             await context.Users.AddAsync(user);
             await context.SaveChangesAsync();
 
@@ -36,7 +39,7 @@ namespace HelpDesk.API.Data
             if (user == null)
                 return null;
 
-            if (!passUtil.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+            if (!PasswordUtil.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
             {
                 return null;
             }
