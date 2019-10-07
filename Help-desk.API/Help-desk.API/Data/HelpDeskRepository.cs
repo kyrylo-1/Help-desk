@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using HelpDesk.API.Dtos;
 using HelpDesk.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,11 +37,14 @@ namespace HelpDesk.API.Data
         /// Get all tickets from all users
         /// </summary>
         /// <returns></returns>
-        public async Task<IEnumerable<Ticket>> GetAllTickets()
+        public async Task<IEnumerable<Ticket>> GetTickets(User user)
         {
-           var allTickets = await context.Tickets.ToListAsync();
+            bool isTeamMemeber = string.Equals(user.Type, UserType.TeamMember.ToString(), StringComparison.OrdinalIgnoreCase);
+            IEnumerable<Ticket> allTickets = isTeamMemeber ?
+                                                await context.Tickets.ToListAsync() :
+                                                user.Tickets;
 
-            return context.Tickets;
+            return allTickets;
         }
 
         public async Task<Ticket> GetTicket(int id)

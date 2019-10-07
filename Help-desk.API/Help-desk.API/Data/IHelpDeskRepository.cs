@@ -12,7 +12,7 @@ namespace HelpDesk.API.Data
         void Delete<T>(T entity) where T : class;
         void Update<T>(T entity) where T : class;
         Task<Ticket> GetTicket(int id);
-        Task<IEnumerable<Ticket>> GetAllTickets();
+        Task<IEnumerable<Ticket>> GetTickets(User user);
         Task<User> GetUser(int userId);
         Task<bool> SaveAll();
     }

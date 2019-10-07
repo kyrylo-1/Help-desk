@@ -71,16 +71,9 @@ namespace HelpDesk.API.Controllers
                 return BadRequest("Can not parse user id");
 
             User userFromRepo = await repo.GetUser(userId);
-            IEnumerable<Ticket> allTickets;
-            if (IsTeamMemeber(userFromRepo.Type))
-            {
-                allTickets = await repo.GetAllTickets();
-            }
-            else
-            {
-                allTickets = userFromRepo.Tickets;
-            }
 
+            //mode to help desk repo
+            IEnumerable<Ticket> allTickets = await repo.GetTickets(userFromRepo);
             if (allTickets == null)
                 return BadRequest(string.Format("Failed to get all tickets for user with id {0}", userId));
 
