@@ -6,7 +6,7 @@ using Xunit;
 
 namespace HelpDesk.API.Tests
 {
-    public class TicketsControllerTests
+    public class UserControllerTests
     {
         [Fact]
         public void AddTicket_ShouldNotAuthorize()

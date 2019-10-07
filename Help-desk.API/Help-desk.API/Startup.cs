@@ -77,25 +77,33 @@ namespace HelpDesk.API
             }
             else
             {
-                app.UseExceptionHandler(builder => {
-                    builder.Run(async context => {
-                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                //app.UseExceptionHandler(builder => {
+                //    builder.Run(async context => {
+                //        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-                        var error = context.Features.Get<IExceptionHandlerFeature>();
-                        if (error != null)
-                        {
-                            context.Response.AddApplicationError(error.Error.Message);
-                            await context.Response.WriteAsync(error.Error.Message);
-                        }
-                    });
-                });
-                //app.UseHsts();
+                //        var error = context.Features.Get<IExceptionHandlerFeature>();
+                //        if (error != null)
+                //        {
+                //            context.Response.AddApplicationError(error.Error.Message);
+                //            await context.Response.WriteAsync(error.Error.Message);
+                //        }
+                //    });
+                //});
+                app.UseHsts();
             }
-
-            //app.UseHttpsRedirection();
+            app.UseDeveloperExceptionPage();
+            app.UseHttpsRedirection();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
-            app.UseMvc();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseMvc(routes =>
+            {
+                routes.MapSpaFallbackRoute(
+                    name: "spa-fallback",
+                    defaults: new { controller = "Fallback", action = "Index" }
+                );
+            });
         }
     }
 }
