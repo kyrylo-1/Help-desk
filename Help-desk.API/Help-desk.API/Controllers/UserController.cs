@@ -62,7 +62,7 @@ namespace HelpDesk.API.Controllers
             return Ok(ticket);
         }
 
-        // ACCESS: TeamMember
+        // ACCESS: TeamMember & HelpDesk
         [HttpGet("tickets")]
         public async Task<IActionResult> GetAllTickets()
         {
@@ -97,12 +97,8 @@ namespace HelpDesk.API.Controllers
                 return Unauthorized();
 
             Ticket ticket = mapper.Map<Ticket>(ticketForCreationDto);
-            if (userFromRepo.Tickets == null)
-                userFromRepo.Tickets = new List<Ticket>();
 
-            userFromRepo.Tickets.Add(ticket);
-
-            if (await repo.SaveAll())
+            if (await repo.AddTicket(userFromRepo, ticket))
             {
                 var ticketoReturn = mapper.Map<TicketForReturnDto>(ticket);
                 return CreatedAtRoute("GetTicket", new { userId, id = ticket.Id }, ticketoReturn);
@@ -119,30 +115,22 @@ namespace HelpDesk.API.Controllers
             if (!int.TryParse(userIdFromClaim, out int userId))
                 return BadRequest("Can not parse user id");
 
-            User userFromRepo = await repo.GetUser(userId);
-            Ticket ticketFromRepo;
-            if (IsTeamMemeber(userFromRepo.Type))
+            try
             {
-                ticketFromRepo = await repo.GetTicket(id);
+                Ticket ticket =  await repo.PatchTicket(userId, id, ticketForUpdateDto.Description);
+                if (ticket!= null)
+                {
+                    return Ok(mapper.Map<TicketForReturnDto>(ticket));
+                }
+                else
+                {
+                    return BadRequest("Failed to update the ticket");
+                }
             }
-            else
+            catch(Exception e)
             {
-                ticketFromRepo = userFromRepo.Tickets.FirstOrDefault(t => t.Id == id);
-            }
-
-            if (ticketFromRepo == null)
-                return BadRequest(string.Format("Ticket with id {0} does not exist", id));
-
-            ticketFromRepo.Description = ticketForUpdateDto.Description;
-            repo.Update(ticketFromRepo);
-
-            if (await repo.SaveAll())
-            {
-                var ticket = mapper.Map<TicketForReturnDto>(ticketFromRepo);
-                return Ok(ticket);
-            }
-
-            return BadRequest("Failed to update the ticket");
+                return BadRequest(e.Message);
+            }          
         }
 
         // ACCESS: TeamMember

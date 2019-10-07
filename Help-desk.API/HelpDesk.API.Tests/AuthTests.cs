@@ -12,19 +12,7 @@ namespace HelpDesk.API.Tests
 {
     public class AuthTests : TestsBase
     {
-        private User GetSampleUser
-        {
-            get
-            {
-                return new User
-                {
-                    Username = "user-test1",
-                    Type = "HelpDeskUser"
-                };
-
-            }
-        }
-        private const string SAMPLE_PASS = "password";
+        public const string SAMPLE_PASS = "password";
 
         [Fact]
         public async void Register_ShouldRegister()
@@ -47,7 +35,7 @@ namespace HelpDesk.API.Tests
         }
 
         [Fact]
-        public async void Register_NotPass_NullUser()
+        public async void Register_Not_Pass_NullUser()
         {
             var authRepo = new AuthRepository(context);
 

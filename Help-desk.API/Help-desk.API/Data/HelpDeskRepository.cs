@@ -18,29 +18,28 @@ namespace HelpDesk.API.Data
             this.context = context;
         }
 
-        public void Add<T>(T entity) where T : class
-        {
-            context.Add(entity);
-        }
-
         public void Delete<T>(T entity) where T : class
         {
             context.Remove(entity);
         }
 
-        public void Update<T>(T entity) where T : class
+        public async Task<bool> AddTicket(User user, Ticket ticket)
         {
-            context.Update(entity);
+            if (user.Tickets == null)
+                user.Tickets = new List<Ticket>();
 
+            user.Tickets.Add(ticket);
+
+            return await SaveAll();
         }
+
         /// <summary>
         /// Get all tickets from all users
         /// </summary>
         /// <returns></returns>
         public async Task<IEnumerable<Ticket>> GetTickets(User user)
         {
-            bool isTeamMemeber = string.Equals(user.Type, UserType.TeamMember.ToString(), StringComparison.OrdinalIgnoreCase);
-            IEnumerable<Ticket> allTickets = isTeamMemeber ?
+            IEnumerable<Ticket> allTickets = IsTeamMemeber(user.Type) ?
                                                 await context.Tickets.ToListAsync() :
                                                 user.Tickets;
 
@@ -61,9 +60,45 @@ namespace HelpDesk.API.Data
             return user;
         }
 
+        public async Task<Ticket> PatchTicket(int userId, int ticketId, string ticketDescription)
+        {
+            User userFromRepo = await GetUser(userId);
+            if (userFromRepo == null)
+                return null;
+
+            Ticket ticket;
+            if (IsTeamMemeber(userFromRepo.Type))
+            {
+                ticket = await GetTicket(ticketId);
+            }
+            else
+            {
+                ticket = userFromRepo.Tickets.FirstOrDefault(t => t.Id == ticketId);
+            }
+
+            if (ticket == null)
+            {
+                throw new System.ArgumentException(string.Format("Ticket with id {0} does not exist", ticketId));
+            }
+            ticket.Description = ticketDescription;
+            context.Update(ticket);
+
+            if (await SaveAll())
+            {
+               return ticket;
+            }
+            return null;
+        }
+
+
         public async Task<bool> SaveAll()
         {
             return await context.SaveChangesAsync() > 0;
+        }
+
+        private bool IsTeamMemeber(string userType)
+        {
+            return string.Equals(userType, UserType.TeamMember.ToString(), StringComparison.OrdinalIgnoreCase);
         }
     }
 }
