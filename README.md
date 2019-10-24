@@ -1,5 +1,5 @@
 # Help-desk
-Check the hosted version of web app [here](https://helpdesktesttask.azurewebsites.net)
+
 ## How to setup locally?
 - go to _"help-desk-client"_ folder -> run **"npm i"** 
 - go to _"Help-desk.API/Help-desk.API"_ folder -> run **"dotnet run"** 
